@@ -4,6 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "server:callback": "node index.js",
+    "server:promise": "node index_promise.js",
+    "server:async": "node index_async.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
