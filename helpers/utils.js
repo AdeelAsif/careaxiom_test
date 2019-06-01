@@ -3,7 +3,7 @@ const request = require("request");
 const cheerio = require("cheerio");
 const async = require("async");
 const { Observable, from } = require("rxjs");
-const { mergeMap, toArray } = require("rxjs/operators");
+const { concatMap, toArray } = require("rxjs/operators");
 
 function parsQueryParams(query) {
   const parsedParams = querystring.parse(query);
@@ -15,9 +15,13 @@ function parsQueryParams(query) {
 }
 
 function fetchUsingCallbacks(urls, cb) {
-  const titles = [];
+  const titles = Array(urls.length)
+    .join(".")
+    .split(".");
 
-  urls.forEach(url => {
+  let processed = 0;
+
+  urls.forEach((url, index) => {
     request(`http://${url}`, function(error, response, body) {
       let webpageTitle = "No Response";
 
@@ -26,9 +30,12 @@ function fetchUsingCallbacks(urls, cb) {
         webpageTitle = $("title").text();
       }
 
-      titles.push(`${url} - ${webpageTitle}`);
+      processed += 1;
 
-      if (titles.length === urls.length) {
+      titles[index] = `${url} - ${webpageTitle}`;
+
+      if (processed === urls.length) {
+        console.log("==>titles :", titles, "\n");
         cb(null, titles);
       }
     });
@@ -36,7 +43,9 @@ function fetchUsingCallbacks(urls, cb) {
 }
 
 function fetchUsingAsync(urls, cb) {
-  const titles = [];
+  const titles = Array(urls.length)
+    .join(".")
+    .split(".");
 
   async.forEachOf(
     urls,
@@ -49,7 +58,7 @@ function fetchUsingAsync(urls, cb) {
           webpageTitle = $("title").text();
         }
 
-        titles.push(`${url} - ${webpageTitle}`);
+        titles[key] = `${url} - ${webpageTitle}`;
 
         callback();
       });
@@ -97,7 +106,7 @@ function fetchUsingRx(urls, cb) {
 
   from(urls)
     .pipe(
-      mergeMap(url => makeHttpCall(url)),
+      concatMap(url => makeHttpCall(url)),
       toArray()
     )
     .subscribe(titles => cb(null, titles));
