@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "server:callback": "node index.js",
-    "server:promise": "node index_promise.js",
-    "server:async": "node index_async.js",
+    "server:callback": "port=7070 node index.js",
+    "server:promise": "port=7071 node index_promise.js",
+    "server:async": "port=7072 node index_async.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
