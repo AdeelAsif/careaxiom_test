@@ -2,6 +2,8 @@ const querystring = require('querystring');
 const request = require('request');
 const cheerio = require('cheerio');
 const async = require('async');
+const { Observable, from } = require('rxjs');
+const { mergeMap, toArray } = require('rxjs/operators');
 
 function parsQueryParams(query) {
   const parsedParams = querystring.parse(query);
@@ -78,9 +80,32 @@ function fetchUsingPromises(urls, cb) {
   });
 }
 
+function fetchUsingRx(urls, cb) {
+  let makeHttpCall = url =>
+    Observable.create(observer => {
+      request('http://' + url, (err, response, body) => {
+        let webpageTitle = 'No Response';
+        if (!err) {
+          const $ = cheerio.load(body);
+          webpageTitle = $('title').text();
+        }
+        observer.next(url + ' - ' + webpageTitle);
+        observer.complete();
+      });
+    });
+
+  from(urls)
+    .pipe(
+      mergeMap(url => makeHttpCall(url)),
+      toArray()
+    )
+    .subscribe(titles => cb(null, titles));
+}
+
 module.exports = {
   parsQueryParams,
   fetchUsingCallbacks,
   fetchUsingAsync,
-  fetchUsingPromises
+  fetchUsingPromises,
+  fetchUsingRx
 };

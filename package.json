@@ -2,18 +2,22 @@
   "name": "careaxiom_test",
   "version": "1.0.0",
   "description": "",
+  "engines": {
+    "node": ">10.15.3"
+  },
   "main": "index.js",
   "scripts": {
-    "server:callback": "port=7070 nodemon index.js",
-    "server:promise": "port=7071 nodemon index_promise.js",
-    "server:async": "port=7072 nodemon index_async.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "server:callback": "port=7070 node index.js",
+    "server:promise": "port=7071 node index_promise.js",
+    "server:async": "port=7072 node index_async.js",
+    "server:rx": "port=7073 node index_rx.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "async": "^3.0.1",
     "cheerio": "^1.0.0-rc.3",
-    "request": "^2.88.0"
+    "request": "^2.88.0",
+    "rxjs": "^6.5.2"
   }
 }
