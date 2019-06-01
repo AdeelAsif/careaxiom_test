@@ -1,9 +1,10 @@
-const url = require('url');
-const http = require('http');
+const url = require("url");
+const http = require("http");
+
 const port = process.env.port || 8080;
 
-const { parsQueryParams, fetchUsingPromises } = require('./helpers/utils');
-const { handleError, renderResponse } = require('./helpers/response');
+const { parsQueryParams, fetchUsingPromises } = require("./helpers/utils");
+const { handleError, renderResponse } = require("./helpers/response");
 
 function handlePageQuery(req, res) {
   const urls = parsQueryParams(req.parsedUrl.query).address;
@@ -19,9 +20,9 @@ function handlePageQuery(req, res) {
 
 const server = http.createServer((req, res) => {
   req.parsedUrl = url.parse(req.url);
-  let { pathname } = req.parsedUrl;
+  const { pathname } = req.parsedUrl;
 
-  if (pathname === '/I/want/title' && req.method === 'GET') {
+  if (pathname === "/I/want/title" && req.method === "GET") {
     handlePageQuery(req, res);
   } else {
     handleError(req, res);
@@ -29,5 +30,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(port, () => {
-  console.log('==>Server Running on https://localhost:' + port);
+  console.log(`==>Server Running on https://localhost:${port}`);
 });
