@@ -13,7 +13,7 @@
     "server:rx": "port=7073 node index_rx.js",
     "lint": "eslint ./index*"
   },
-  "author": "",
+  "author": "Adeel Asif",
   "license": "ISC",
   "dependencies": {
     "async": "^3.0.1",
