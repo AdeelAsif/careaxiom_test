@@ -10,7 +10,8 @@
     "server:callback": "port=7070 node index.js",
     "server:promise": "port=7071 node index_promise.js",
     "server:async": "port=7072 node index_async.js",
-    "server:rx": "port=7073 node index_rx.js"
+    "server:rx": "port=7073 node index_rx.js",
+    "lint": "eslint ./index*"
   },
   "author": "",
   "license": "ISC",
@@ -19,5 +20,16 @@
     "cheerio": "^1.0.0-rc.3",
     "request": "^2.88.0",
     "rxjs": "^6.5.2"
+  },
+  "devDependencies": {
+    "eslint": "^5.3.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-config-prettier": "^4.3.0",
+    "eslint-plugin-import": "^2.17.3",
+    "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-prettier": "^3.1.0",
+    "eslint-plugin-react": "^7.13.0",
+    "nodemon": "^1.19.1",
+    "prettier": "^1.17.1"
   }
 }
