@@ -30,5 +30,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(port, () => {
-  console.log(`==>Server Running on https://localhost: ${port}`);
+  console.log(`==>Server Running on https://localhost:${port}`);
 });

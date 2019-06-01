@@ -11,7 +11,7 @@
     "server:promise": "port=7071 node index_promise.js",
     "server:async": "port=7072 node index_async.js",
     "server:rx": "port=7073 node index_rx.js",
-    "lint": "eslint ./index*"
+    "lint": "eslint ./"
   },
   "author": "Adeel Asif",
   "license": "ISC",

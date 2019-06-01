@@ -1,15 +1,15 @@
-const querystring = require('querystring');
-const request = require('request');
-const cheerio = require('cheerio');
-const async = require('async');
-const { Observable, from } = require('rxjs');
-const { mergeMap, toArray } = require('rxjs/operators');
+const querystring = require("querystring");
+const request = require("request");
+const cheerio = require("cheerio");
+const async = require("async");
+const { Observable, from } = require("rxjs");
+const { mergeMap, toArray } = require("rxjs/operators");
 
 function parsQueryParams(query) {
   const parsedParams = querystring.parse(query);
   Object.keys(parsedParams).forEach(key => {
-    let value = parsedParams[key];
-    parsedParams[key] = Array.isArray(value) ? value : value ? [value] : [];
+    const value = parsedParams[key] || [];
+    parsedParams[key] = Array.isArray(value) ? value : [value];
   });
   return parsedParams;
 }
@@ -17,18 +17,18 @@ function parsQueryParams(query) {
 function fetchUsingCallbacks(urls, cb) {
   const titles = [];
 
-  urls.forEach((url, index) => {
-    request('http://' + url, function(error, response, body) {
-      let webpageTitle = 'No Response';
+  urls.forEach(url => {
+    request(`http://${url}`, function(error, response, body) {
+      let webpageTitle = "No Response";
 
-      if (!error && response.statusCode == 200) {
+      if (!error && response.statusCode === 200) {
         const $ = cheerio.load(body);
-        webpageTitle = $('title').text();
+        webpageTitle = $("title").text();
       }
 
-      titles.push(url + ' - ' + webpageTitle);
+      titles.push(`${url} - ${webpageTitle}`);
 
-      if (titles.length == urls.length) {
+      if (titles.length === urls.length) {
         cb(null, titles);
       }
     });
@@ -41,15 +41,15 @@ function fetchUsingAsync(urls, cb) {
   async.forEachOf(
     urls,
     (url, key, callback) => {
-      request('http://' + url, function(error, response, body) {
-        let webpageTitle = 'No Response';
+      request(`http://${url}`, function(error, response, body) {
+        let webpageTitle = "No Response";
 
-        if (!error && response.statusCode == 200) {
+        if (!error && response.statusCode === 200) {
           const $ = cheerio.load(body);
-          webpageTitle = $('title').text();
+          webpageTitle = $("title").text();
         }
 
-        titles.push(url + ' - ' + webpageTitle);
+        titles.push(`${url} - ${webpageTitle}`);
 
         callback();
       });
@@ -62,15 +62,16 @@ function fetchUsingAsync(urls, cb) {
 }
 
 function fetchUsingPromises(urls, cb) {
-  var requestFetchPromise = function(url) {
+  const requestFetchPromise = function(url) {
+    // eslint-disable-next-line no-unused-vars
     return new Promise((resolve, reject) => {
-      request('http://' + url, (err, response, body) => {
-        let webpageTitle = 'No Response';
+      request(`http://${url}`, (err, response, body) => {
+        let webpageTitle = "No Response";
         if (!err) {
           const $ = cheerio.load(body);
-          webpageTitle = $('title').text();
+          webpageTitle = $("title").text();
         }
-        resolve(url + ' - ' + webpageTitle);
+        resolve(`${url} - ${webpageTitle}`);
       });
     });
   };
@@ -81,15 +82,15 @@ function fetchUsingPromises(urls, cb) {
 }
 
 function fetchUsingRx(urls, cb) {
-  let makeHttpCall = url =>
+  const makeHttpCall = url =>
     Observable.create(observer => {
-      request('http://' + url, (err, response, body) => {
-        let webpageTitle = 'No Response';
+      request(`http://${url}`, (err, response, body) => {
+        let webpageTitle = "No Response";
         if (!err) {
           const $ = cheerio.load(body);
-          webpageTitle = $('title').text();
+          webpageTitle = $("title").text();
         }
-        observer.next(url + ' - ' + webpageTitle);
+        observer.next(`${url} - ${webpageTitle}`);
         observer.complete();
       });
     });
