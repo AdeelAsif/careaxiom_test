@@ -1,9 +1,9 @@
 const url = require('url');
-const querystring = require('querystring');
-const request = require('request');
-const cheerio = require('cheerio');
-
 const http = require('http');
+const port = process.env.port || 8080;
+
+const { parsQueryParams, fetchUsingAsync } = require('./helpers/utils');
+const { handleError, renderResponse } = require('./helpers/response');
 
 const server = http.createServer((req, res) => {
   req.parsedUrl = url.parse(req.url);
@@ -16,41 +16,18 @@ const server = http.createServer((req, res) => {
   }
 });
 
-server.listen(8080, () => {});
+server.listen(port, () => {
+  console.log('==>Server Running on https://localhost:' + port);
+});
 
 function handlePageQuery(req, res) {
-  let parsedParams = querystring.parse(req.parsedUrl.query);
-  let urls = parsedParams.address;
+  const urls = parsQueryParams(req.parsedUrl.query).address;
 
-  var requestAsync = function(url) {
-    return new Promise((resolve, reject) => {
-      request('http://' + url, (err, response, body) => {
-        let webpageTitle = 'No Response';
-        if (!err) {
-          const $ = cheerio.load(body);
-          webpageTitle = $('title').text();
-        }
-        resolve(url + ' - ' + webpageTitle);
-      });
-    });
-  };
+  if (!urls || !urls.length) {
+    return res.end(renderResponse());
+  }
 
-  Promise.all(urls.map(requestAsync)).then(titles => {
-    const response = `<html>
-					<head></head>
-							<body>
-							<h1> Following are the titles of given websites: </h1>
-							<ul>
-								${titles.reduce((acc, title) => acc + `<li>${title}</li>`, '')}
-							</ul>
-					</body>
-					</html>`;
-
-    res.end(response);
+  fetchUsingAsync(urls, (error, titles) => {
+    res.end(renderResponse(titles));
   });
-}
-
-function handleError(req, res) {
-  res.statusCode = 404;
-  res.end('404: File Not Found');
 }

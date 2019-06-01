@@ -1,6 +1,7 @@
 const querystring = require('querystring');
 const request = require('request');
 const cheerio = require('cheerio');
+var async = require('async');
 
 function parsQueryParams(query) {
   const parsedParams = querystring.parse(query);
@@ -32,7 +33,34 @@ function fetchUsingCallbacks(urls, cb) {
   });
 }
 
+function fetchUsingAsync(urls, cb) {
+  const titles = [];
+
+  async.forEachOf(
+    urls,
+    (url, key, callback) => {
+      request('http://' + url, function(error, response, body) {
+        let webpageTitle = 'No Response';
+
+        if (!error && response.statusCode == 200) {
+          const $ = cheerio.load(body);
+          webpageTitle = $('title').text();
+        }
+
+        titles.push(url + ' - ' + webpageTitle);
+
+        callback();
+      });
+    },
+    err => {
+      if (err) console.error(err.message);
+      cb(null, titles);
+    }
+  );
+}
+
 module.exports = {
   parsQueryParams,
-  fetchUsingCallbacks
+  fetchUsingCallbacks,
+  fetchUsingAsync
 };
