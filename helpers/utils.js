@@ -1,7 +1,7 @@
 const querystring = require('querystring');
 const request = require('request');
 const cheerio = require('cheerio');
-var async = require('async');
+const async = require('async');
 
 function parsQueryParams(query) {
   const parsedParams = querystring.parse(query);
