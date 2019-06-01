@@ -59,8 +59,28 @@ function fetchUsingAsync(urls, cb) {
   );
 }
 
+function fetchUsingPromises(urls, cb) {
+  var requestFetchPromise = function(url) {
+    return new Promise((resolve, reject) => {
+      request('http://' + url, (err, response, body) => {
+        let webpageTitle = 'No Response';
+        if (!err) {
+          const $ = cheerio.load(body);
+          webpageTitle = $('title').text();
+        }
+        resolve(url + ' - ' + webpageTitle);
+      });
+    });
+  };
+
+  Promise.all(urls.map(requestFetchPromise)).then(titles => {
+    cb(null, titles);
+  });
+}
+
 module.exports = {
   parsQueryParams,
   fetchUsingCallbacks,
-  fetchUsingAsync
+  fetchUsingAsync,
+  fetchUsingPromises
 };
